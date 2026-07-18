@@ -104,6 +104,7 @@ def send_split_messages(chat_id, text):
 
 @bot.message_handler(func=lambda message: True)
 def reply_to_user(message):
+    global WORKING_MODEL          # ← 搬咗嚟最頂，喺用到 WORKING_MODEL 之前
     user_text = message.text
     print(f"收到 Eunice 的訊息: {user_text}")
 
@@ -128,13 +129,14 @@ def reply_to_user(message):
 
     except Exception as e:
         print(f"出錯啦: {e}")
-        global WORKING_MODEL
         WORKING_MODEL = find_working_model()  # 重新搵過可用型號
         bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
 
 
+
 def random_message_loop():
     while True:
+        global WORKING_MODEL
         wait_time = random.randint(600, 43200)
         time.sleep(wait_time)
 
@@ -155,7 +157,6 @@ def random_message_loop():
                 send_split_messages(MY_CHAT_ID, reply_text)
             except Exception as e:
                 print(f"出錯啦: {e}")
-                global WORKING_MODEL
                 WORKING_MODEL = find_working_model()  # 重新搵過可用型號
                 bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
 
