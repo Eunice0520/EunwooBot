@@ -61,7 +61,6 @@ vip_models = [
     'gemini-flash-latest',
     'gemini-3.5-flash',
     'gemini-2.5-flash',
-    'gemini-pro'
 ]
 
 WORKING_MODEL = None  # 一開始未有，等測試成功先至有值
@@ -156,9 +155,8 @@ def random_message_loop():
                 update_memory("恩宇", reply_text.replace("|||", " "))
                 send_split_messages(MY_CHAT_ID, reply_text)
             except Exception as e:
-                print(f"出錯啦: {e}")
-                WORKING_MODEL = find_working_model()  # 重新搵過可用型號
-                bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
+                print(f"主動發送失敗: {e}")
+                WORKING_MODEL = find_working_model()
 
 # ==================== [ 開一個假網站，畀 Render 知道我哋有開 Port ] ====================
 app = Flask(__name__)
