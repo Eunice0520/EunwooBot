@@ -106,15 +106,16 @@ def reply_to_user(message):
     user_text = message.text
     print(f"收到 Eunice 的訊息: {user_text}")
 
+    if WORKING_MODEL is None:
+    bot.reply_to(message, "……（恩宇個腦仲未連接好，等一陣再試）")
+    return
+
     update_memory("Eunice", user_text)
 
     history_text = "\n".join(memory_history)
     full_prompt = f"{XURAN_PROMPT}\n\n【最近對話記憶】\n{history_text}\n\n請以恩宇的身分，回應 Eunice 最新的話："
 
     try:
-        if WORKING_MODEL is None:
-    bot.reply_to(message, "……（恩宇個腦仲未連接好，等一陣再試）")
-    return
         response = client.models.generate_content(
             model=WORKING_MODEL,
             contents=full_prompt
