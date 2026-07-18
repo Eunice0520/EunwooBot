@@ -142,7 +142,9 @@ def home():
     return "恩宇線上，運作中！"
 
 def run_web():
+    # 確保個 port 係由 Render 提供嘅，如果冇就用 10000
     port = int(os.environ.get('PORT', 10000))
+    # host 必須要係 0.0.0.0 先至會被 Render 偵測到
     app.run(host='0.0.0.0', port=port)
 
 threading.Thread(target=run_web, daemon=True).start()
