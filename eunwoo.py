@@ -52,6 +52,7 @@ XURAN_PROMPT = """
 # ========================================================
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
+bot.remove_webhook()  # 清走任何殘留嘅 webhook 設定，避免同 polling 衝突
 client = genai.Client(api_key=GEMINI_KEY)
 
 print("正在連線 Google 伺服器，優先測試最佳大腦...")
