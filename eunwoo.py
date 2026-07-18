@@ -63,21 +63,35 @@ vip_models = [
     'gemini-pro'
 ]
 
-WORKING_MODEL = 'gemini-3.5-flash'
+WORKING_MODEL = None  # 一開始未有，等測試成功先至有值
 
-for model_name in vip_models:
-    print(f"正在嘗試測試大腦：{model_name}...")
-    try:
-        client.models.generate_content(model=model_name, contents="Hi")
-        WORKING_MODEL = model_name
-        print(f"測試成功！恩宇將正式使用型號：{WORKING_MODEL}")
-        break
-    except Exception as e:
-        print(f"{model_name} 唔通，原因：{e}")
-        continue
-else:
-    print("⚠️ 所有型號都測試失敗，請檢查 GEMINI_KEY 是否正確設定")
-print(f"系統啟動：恩宇將正式使用型號：{WORKING_MODEL}")
+def find_working_model():
+    """測試邊個型號可以用，回傳搵到嘅型號名；全部失敗就回傳 None"""
+    for model_name in vip_models:
+        print(f"正在嘗試測試大腦：{model_name}...")
+        try:
+            client.models.generate_content(model=model_name, contents="Hi")
+            print(f"測試成功！恩宇將正式使用型號：{model_name}")
+            return model_name
+        except Exception as e:
+            print(f"{model_name} 唔通，原因：{e}")
+            continue
+    return None
+
+# 第一次啟動就試
+WORKING_MODEL = find_working_model()
+
+def model_watchdog():
+    """如果一開始搵唔到可用型號，背景每隔幾分鐘自動重試，唔使重新部署"""
+    global WORKING_MODEL
+    while WORKING_MODEL is None:
+        print("⚠️ 暫時搵唔到可用大腦，5 分鐘後自動重試...")
+        time.sleep(300)  # 等 5 分鐘
+        WORKING_MODEL = find_working_model()
+    print(f"✅ Watchdog 完成任務，恩宇已經連接到：{WORKING_MODEL}")
+
+if WORKING_MODEL is None:
+    threading.Thread(target=model_watchdog, daemon=True).start()
 
 def send_split_messages(chat_id, text):
     messages = text.split("|||")
@@ -98,6 +112,9 @@ def reply_to_user(message):
     full_prompt = f"{XURAN_PROMPT}\n\n【最近對話記憶】\n{history_text}\n\n請以恩宇的身分，回應 Eunice 最新的話："
 
     try:
+        if WORKING_MODEL is None:
+    bot.reply_to(message, "……（恩宇個腦仲未連接好，等一陣再試）")
+    return
         response = client.models.generate_content(
             model=WORKING_MODEL,
             contents=full_prompt
