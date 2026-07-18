@@ -1,4 +1,8 @@
+# 放在最頂，匯入之後即刻設定
 import telebot
+from telebot import apihelper
+apihelper.proxy = None # 強制關閉 Proxy，避免雲端亂連線
+bot = telebot.TeleBot(TELEGRAM_TOKEN)
 from google import genai
 import random
 import time
@@ -7,12 +11,15 @@ import json
 import os
 
 # ==================== [ 填寫你的資料 ] ====================
-TELEGRAM_TOKEN = '8847954122:AAFKjnD3f1SEAU9k6gGdmWc8xuqCWsOcbM4'  
-GEMINI_KEY = 'AQ.Ab8RN6LVkyH02bzpPRj1T_6hdaDJ-NMFWbSNMExUYKQFSzeBmA'          # 請貼上你的 API Key
-MY_CHAT_ID = 8024847200                    # 請填入你的 Chat ID
+import os
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')   # 請貼上你的 API Key
+# 從環境變數讀取，唔好直接寫喺度！
+GEMINI_KEY = os.environ.get('GEMINI_KEY')
+MY_CHAT_ID = os.environ.get('MY_CHAT_ID')⁠                    # 請填入你的 Chat ID
 
 # ==================== [ 記憶體設定 (新增) ] ====================
-MEMORY_FILE = '/Users/eunice/Desktop/eunwoo_memory.json'
+# 讓程式自動搵目前所在嘅資料夾，唔好寫死路徑
+MEMORY_FILE = os.path.join(os.path.dirname(__file__), 'eunwoo_memory.json')
 
 # 讀取日記本
 def load_memory():
