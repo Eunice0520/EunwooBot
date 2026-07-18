@@ -133,3 +133,7 @@ def random_message_loop():
                 print(f"主動發送失敗: {e}")
 
 threading.Thread(target=random_message_loop, daemon=True).start()
+
+print("恩宇已經上線，等緊 Eunice 傳訊息...")
+bot.polling(none_stop=True)
+
