@@ -58,12 +58,12 @@ print("正在連線 Google 伺服器，優先測試最佳大腦...")
 
 vip_models = [
     'gemini-flash-latest',
-    'gemini-1.5-flash',
+    'gemini-3.5-flash',
     'gemini-2.5-flash',
     'gemini-pro'
 ]
 
-WORKING_MODEL = 'gemini-pro'
+WORKING_MODEL = 'gemini-3.5-flash'
 
 for model_name in vip_models:
     print(f"正在嘗試測試大腦：{model_name}...")
