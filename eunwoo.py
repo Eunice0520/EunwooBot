@@ -1,26 +1,21 @@
-# 放在最頂，匯入之後即刻設定
+import os
 import telebot
 from telebot import apihelper
-apihelper.proxy = None # 強制關閉 Proxy，避免雲端亂連線
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
+apihelper.proxy = None  # 強制關閉 Proxy，避免雲端亂連線
 from google import genai
 import random
 import time
 import threading
 import json
-import os
 
 # ==================== [ 填寫你的資料 ] ====================
-import os
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 GEMINI_KEY = os.environ.get('GEMINI_KEY')
-MY_CHAT_ID = os.environ.get('MY_CHAT_ID')⁠
+MY_CHAT_ID = os.environ.get('MY_CHAT_ID')
 
 # ==================== [ 記憶體設定 (新增) ] ====================
-# 讓程式自動搵目前所在嘅資料夾，唔好寫死路徑
 MEMORY_FILE = os.path.join(os.path.dirname(__file__), 'eunwoo_memory.json')
 
-# 讀取日記本
 def load_memory():
     if os.path.exists(MEMORY_FILE):
         try:
@@ -30,14 +25,11 @@ def load_memory():
             return []
     return []
 
-# 寫入日記本
 def save_memory(memory_list):
-    # 將 40 改成 200，大約可以記住幾日到一個星期嘅內容
     if len(memory_list) > 200:
         memory_list = memory_list[-200:]
     with open(MEMORY_FILE, 'w', encoding='utf-8') as f:
         json.dump(memory_list, f, ensure_ascii=False, indent=2)
-
 
 memory_history = load_memory()
 
@@ -61,31 +53,28 @@ XURAN_PROMPT = """
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 client = genai.Client(api_key=GEMINI_KEY)
 
-# 【大腦智能優先測試機制】(防超速 + 防失聯)
 print("正在連線 Google 伺服器，優先測試最佳大腦...")
 
-# 設立 VIP 優先名單 (由最新/最想用嘅排到最尾)
 vip_models = [
-    'gemini-flash-latest', 
-    'gemini-1.5-flash', 
-    'gemini-2.5-flash', 
+    'gemini-flash-latest',
+    'gemini-1.5-flash',
+    'gemini-2.5-flash',
     'gemini-pro'
 ]
 
-WORKING_MODEL = 'gemini-pro' # 墊底預設
+WORKING_MODEL = 'gemini-pro'
 
 for model_name in vip_models:
-    print(f"🔍 嘗試測試大腦：{model_name}...")
+    print(f"正在嘗試測試大腦：{model_name}...")
     try:
-        # 只做極輕量測試，防止耗用太多資源
         client.models.generate_content(model=model_name, contents="Hi")
         WORKING_MODEL = model_name
-        print(f"✅ 測試成功！恩宇將正式使用型號：{WORKING_MODEL}")
-        break # 一旦成功就即刻跳出迴圈，絕對唔會超速！
+        print(f"測試成功！恩宇將正式使用型號：{WORKING_MODEL}")
+        break
     except Exception:
-        print(f"❌ {model_name} 唔通，即刻試下一個...")
+        print(f"{model_name} 唔通，即刻試下一個...")
         continue
-print(f"✅ 系統強制啟動：恩宇將正式使用型號：{WORKING_MODEL}")
+print(f"系統強制啟動：恩宇將正式使用型號：{WORKING_MODEL}")
 
 
 def send_split_messages(chat_id, text):
@@ -100,39 +89,38 @@ def send_split_messages(chat_id, text):
 def reply_to_user(message):
     user_text = message.text
     print(f"收到 Eunice 的訊息: {user_text}")
-    
+
     update_memory("Eunice", user_text)
-    
+
     history_text = "\n".join(memory_history)
     full_prompt = f"{XURAN_PROMPT}\n\n【最近對話記憶】\n{history_text}\n\n請以恩宇的身分，回應 Eunice 最新的話："
-    
+
     try:
         response = client.models.generate_content(
             model=WORKING_MODEL,
             contents=full_prompt
         )
         reply_text = response.text
-        
+
         update_memory("恩宇", reply_text.replace("|||", " "))
         send_split_messages(message.chat.id, reply_text)
-        
+
     except Exception as e:
         print(f"出錯啦: {e}")
         bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
 
 def random_message_loop():
     while True:
-        # 隨機休息時間：10分鐘 (600秒) 到 12個鐘 (43200秒)
         wait_time = random.randint(600, 43200)
         time.sleep(wait_time)
-        
+
         if random.random() < 0.6:
             print("【系統】觸發成功！恩宇正在主動找你...")
             current_time = time.strftime("%H:%M")
-            
+
             history_text = "\n".join(memory_history)
             trigger_prompt = f"{XURAN_PROMPT}\n\n【最近對話記憶】\n{history_text}\n\n現在時間是 {current_time}。請根據對話記憶，主動傳句話給 Eunice："
-            
+
             try:
                 response = client.models.generate_content(
                     model=WORKING_MODEL,
@@ -145,6 +133,3 @@ def random_message_loop():
                 print(f"主動發送失敗: {e}")
 
 threading.Thread(target=random_message_loop, daemon=True).start()
-
-print("🎉 恩宇終極版上線！(已配備寫日記長期記憶功能)")
-bot.polling(none_stop=True)
