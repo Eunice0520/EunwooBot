@@ -12,8 +12,7 @@ import os
 
 # ==================== [ 填寫你的資料 ] ====================
 import os
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')   # 請貼上你的 API Key
-# 從環境變數讀取，唔好直接寫喺度！
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 GEMINI_KEY = os.environ.get('GEMINI_KEY')
 MY_CHAT_ID = os.environ.get('MY_CHAT_ID')⁠
 
