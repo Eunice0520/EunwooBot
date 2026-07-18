@@ -103,7 +103,7 @@ def reply_to_user(message):
         )
         reply_text = response.text
 
-        update_memory("恩宇", reply_text.replace("|||", " "))
+
         send_split_messages(message.chat.id, reply_text)
 
     except Exception as e:
