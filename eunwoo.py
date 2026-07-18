@@ -128,6 +128,8 @@ def reply_to_user(message):
 
     except Exception as e:
         print(f"出錯啦: {e}")
+        global WORKING_MODEL
+        WORKING_MODEL = find_working_model()  # 重新搵過可用型號
         bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
 
 
@@ -152,9 +154,11 @@ def random_message_loop():
                 update_memory("恩宇", reply_text.replace("|||", " "))
                 send_split_messages(MY_CHAT_ID, reply_text)
             except Exception as e:
-                print(f"主動發送失敗: {e}")
+                print(f"出錯啦: {e}")
+                global WORKING_MODEL
+                WORKING_MODEL = find_working_model()  # 重新搵過可用型號
+                bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
 
-threading.Thread(target=random_message_loop, daemon=True).start()
 # ==================== [ 開一個假網站，畀 Render 知道我哋有開 Port ] ====================
 app = Flask(__name__)
 
@@ -163,9 +167,7 @@ def home():
     return "恩宇線上，運作中！"
 
 def run_web():
-    # 確保個 port 係由 Render 提供嘅，如果冇就用 10000
     port = int(os.environ.get('PORT', 10000))
-    # host 必須要係 0.0.0.0 先至會被 Render 偵測到
     app.run(host='0.0.0.0', port=port)
 
 threading.Thread(target=run_web, daemon=True).start()
@@ -173,4 +175,3 @@ threading.Thread(target=random_message_loop, daemon=True).start()
 
 print("恩宇已經上線，等緊 Eunice 傳訊息...")
 bot.polling(none_stop=True)
-
