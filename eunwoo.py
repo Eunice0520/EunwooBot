@@ -107,8 +107,8 @@ def reply_to_user(message):
     print(f"收到 Eunice 的訊息: {user_text}")
 
     if WORKING_MODEL is None:
-    bot.reply_to(message, "……（恩宇個腦仲未連接好，等一陣再試）")
-    return
+        bot.reply_to(message, "……（恩宇個腦仲未連接好，等一陣再試）")
+        return
 
     update_memory("Eunice", user_text)
 
@@ -128,6 +128,7 @@ def reply_to_user(message):
     except Exception as e:
         print(f"出錯啦: {e}")
         bot.reply_to(message, "……（恩宇大腦連線中，稍等一下）")
+
 
 def random_message_loop():
     while True:
