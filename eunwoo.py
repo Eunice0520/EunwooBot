@@ -15,7 +15,7 @@ import os
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')   # 請貼上你的 API Key
 # 從環境變數讀取，唔好直接寫喺度！
 GEMINI_KEY = os.environ.get('GEMINI_KEY')
-MY_CHAT_ID = os.environ.get('MY_CHAT_ID')⁠                    # 請填入你的 Chat ID
+MY_CHAT_ID = os.environ.get('MY_CHAT_ID')⁠
 
 # ==================== [ 記憶體設定 (新增) ] ====================
 # 讓程式自動搵目前所在嘅資料夾，唔好寫死路徑
