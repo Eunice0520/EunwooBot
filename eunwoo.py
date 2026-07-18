@@ -72,11 +72,12 @@ for model_name in vip_models:
         WORKING_MODEL = model_name
         print(f"測試成功！恩宇將正式使用型號：{WORKING_MODEL}")
         break
-    except Exception:
-        print(f"{model_name} 唔通，即刻試下一個...")
+    except Exception as e:
+        print(f"{model_name} 唔通，原因：{e}")
         continue
-print(f"系統強制啟動：恩宇將正式使用型號：{WORKING_MODEL}")
-
+else:
+    print("⚠️ 所有型號都測試失敗，請檢查 GEMINI_KEY 是否正確設定")
+print(f"系統啟動：恩宇將正式使用型號：{WORKING_MODEL}")
 
 def send_split_messages(chat_id, text):
     messages = text.split("|||")
