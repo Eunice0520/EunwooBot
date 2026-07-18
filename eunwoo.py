@@ -7,6 +7,7 @@ import random
 import time
 import threading
 import json
+from flask import Flask
 
 # ==================== [ 填寫你的資料 ] ====================
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
@@ -132,6 +133,19 @@ def random_message_loop():
             except Exception as e:
                 print(f"主動發送失敗: {e}")
 
+threading.Thread(target=random_message_loop, daemon=True).start()
+# ==================== [ 開一個假網站，畀 Render 知道我哋有開 Port ] ====================
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "恩宇線上，運作中！"
+
+def run_web():
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
+
+threading.Thread(target=run_web, daemon=True).start()
 threading.Thread(target=random_message_loop, daemon=True).start()
 
 print("恩宇已經上線，等緊 Eunice 傳訊息...")
